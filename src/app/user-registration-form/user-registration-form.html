@@ -1,0 +1,50 @@
+<h2 mat-dialog-title>Sign Up</h2>
+
+<div mat-dialog-content>
+  <form [formGroup]="registrationForm" (ngSubmit)="register()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Username</mat-label>
+      <input matInput formControlName="Username" />
+      @if (registrationForm.get('Username')?.hasError('required')) {
+        <mat-error>Username is required.</mat-error>
+      }
+      @if (registrationForm.get('Username')?.hasError('minlength')) {
+        <mat-error>Username must be at least 2 characters.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Password</mat-label>
+      <input matInput type="password" formControlName="Password" />
+      @if (registrationForm.get('Password')?.hasError('required')) {
+        <mat-error>Password is required.</mat-error>
+      }
+      @if (registrationForm.get('Password')?.hasError('minlength')) {
+        <mat-error>Password must be at least 6 characters.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="Email" />
+      @if (registrationForm.get('Email')?.hasError('required')) {
+        <mat-error>Email is required.</mat-error>
+      }
+      @if (registrationForm.get('Email')?.hasError('email')) {
+        <mat-error>Enter a valid email address.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Birthday (optional)</mat-label>
+      <input matInput type="date" formControlName="Birthday" />
+    </mat-form-field>
+
+    <div class="actions">
+      <button mat-button type="button" (click)="close()">Cancel</button>
+      <button mat-raised-button type="submit" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Creating...' : 'Create account' }}
+      </button>
+    </div>
+  </form>
+</div>

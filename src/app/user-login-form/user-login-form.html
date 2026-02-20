@@ -1,0 +1,28 @@
+<h2 mat-dialog-title>Login</h2>
+
+<div mat-dialog-content>
+  <form [formGroup]="loginForm" (ngSubmit)="login()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Username</mat-label>
+      <input matInput formControlName="Username" />
+      @if (loginForm.get('Username')?.hasError('required')) {
+        <mat-error>Username is required.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Password</mat-label>
+      <input matInput type="password" formControlName="Password" />
+      @if (loginForm.get('Password')?.hasError('required')) {
+        <mat-error>Password is required.</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="actions">
+      <button mat-button type="button" (click)="close()">Cancel</button>
+      <button mat-raised-button type="submit" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Logging in...' : 'Login' }}
+      </button>
+    </div>
+  </form>
+</div>
