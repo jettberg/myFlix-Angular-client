@@ -1,0 +1,72 @@
+@if (isLoading) {
+  <p>Loading profile...</p>
+} @else {
+  <div class="profile">
+    <h2>Your Profile</h2>
+    <h3>Want to change your information?</h3>
+    <p class="muted">Update your email, birthday, or password below.</p>
+
+    <form [formGroup]="profileForm" (ngSubmit)="save()">
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="Username" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="Email" />
+        @if (profileForm.get('Email')?.hasError('required')) {
+          <mat-error>Email is required.</mat-error>
+        }
+        @if (profileForm.get('Email')?.hasError('email')) {
+          <mat-error>Enter a valid email.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Birthday</mat-label>
+        <input matInput type="date" formControlName="Birthday" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>New Password (optional)</mat-label>
+        <input matInput type="password" formControlName="Password" />
+      </mat-form-field>
+
+      <button mat-raised-button type="submit">Save Changes</button>
+    </form>
+
+    <hr />
+
+    <h3>Favorite Movies</h3>
+
+    @if (!favoriteMovies?.length) {
+      <p class="muted">You haven’t favorited any movies yet.</p>
+    } @else {
+      <ul class="favorites-list">
+        @for (movie of favoriteMovies; track (movie?._id ?? movie)) {
+          <li class="favorite-item">
+            <div class="favorite-info">
+              <div class="favorite-title">
+                {{ movie?.title ?? movie?.Title ?? movie }}
+              </div>
+
+              @if (movie?.year) {
+                <div class="muted">({{ movie.year }})</div>
+              }
+            </div>
+
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="removeFromFavorites(movie)"
+              [disabled]="isRemoving(movie)"
+            >
+              {{ isRemoving(movie) ? 'Removing...' : 'Remove from favorites' }}
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+}

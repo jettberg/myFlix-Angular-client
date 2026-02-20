@@ -1,0 +1,17 @@
+<h2 mat-dialog-title>{{ movie?.title || 'Movie Details' }}</h2>
+
+<div mat-dialog-content>
+  <p><strong>Year:</strong> {{ movie?.year }}</p>
+  <p><strong>Director:</strong> {{ movie?.director }}</p>
+  <p><strong>Genres:</strong> {{ movie?.genre?.join(', ') }}</p>
+  <p><strong>Runtime:</strong> {{ movie?.runtime }} mins</p>
+  <p><strong>Rating:</strong> {{ movie?.rating }}</p>
+
+  @if (movie?.cast?.length) {
+    <p><strong>Cast:</strong> {{ movie.cast.join(', ') }}</p>
+  }
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+</div>

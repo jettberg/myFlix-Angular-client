@@ -1,0 +1,15 @@
+<h2 mat-dialog-title>Genre</h2>
+
+<div mat-dialog-content>
+  <p><strong>Movie:</strong> {{ data?.title }}</p>
+
+  @if (data?.genre?.length) {
+    <p><strong>Genres:</strong> {{ data.genre.join(', ') }}</p>
+  } @else {
+    <p>No genre data available.</p>
+  }
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+</div>

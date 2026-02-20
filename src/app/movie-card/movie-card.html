@@ -1,0 +1,38 @@
+@if (isLoading) {
+  <p>Loading movies...</p>
+} @else {
+  <div class="grid">
+    @for (movie of movies; track (movie._id ?? movie.id ?? movie.title ?? movie.Title)) {
+      <mat-card class="card">
+        <mat-card-header>
+          <mat-card-title>{{ movie.title }}</mat-card-title>
+
+          <mat-card-subtitle>
+            Directed by: {{ movie.director }}
+          </mat-card-subtitle>
+        </mat-card-header>
+
+        <img class="poster" [src]="movie.image" [alt]="movie.title" />
+
+        <mat-card-actions class="actions">
+          <button mat-button (click)="openGenreDialog(movie)">Genre</button>
+          <button mat-button (click)="openDirectorDialog(movie)">Director</button>
+          <button mat-button (click)="openMovieDetailsDialog(movie)">Details</button>
+
+          <button
+            mat-icon-button
+            (click)="toggleFavorite(movie)"
+            [disabled]="isFavoriteBusy(movie)"
+            [attr.aria-label]="isFavorited(movie) ? 'Remove from favorites' : 'Add to favorites'"
+          >
+            <mat-icon>{{ isFavorited(movie) ? 'favorite' : 'favorite_border' }}</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    }
+  </div>
+
+  @if (!movies?.length) {
+    <p>No movies returned from API.</p>
+  }
+}

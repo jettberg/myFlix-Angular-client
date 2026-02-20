@@ -1,0 +1,9 @@
+{
+  "entryPoints": ["src/app"],
+  "tsconfig": "tsconfig.app.json",
+  "out": "docs/typedoc",
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeExternals": true,
+  "includeVersion": true
+}

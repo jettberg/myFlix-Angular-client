@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>Director</h2>
+
+<div mat-dialog-content>
+  <p><strong>Movie:</strong> {{ data?.title }}</p>
+  <p><strong>Director:</strong> {{ data?.director || 'Unknown' }}</p>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+</div>

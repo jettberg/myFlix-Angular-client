@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-
+import { finalize } from 'rxjs/operators';
 import { FetchApiDataService } from '../fetch-api-data.service';
 
 @Component({
@@ -32,29 +32,36 @@ export class UserRegistrationForm {
 
   // Using uppercase keys expected by myFlix API
   registrationForm = this.fb.group({
-    Username: ['', [Validators.required, Validators.minLength(2)]],
-    Password: ['', [Validators.required, Validators.minLength(6)]],
+    Username: ['', [Validators.required, Validators.minLength(5)]],
+    Password: ['', [Validators.required, Validators.minLength(8)]],
     Email: ['', [Validators.required, Validators.email]],
-    Birthday: [''], // optional
+    Birthday: [''],
   });
 
-  register(): void {
-    if (this.registrationForm.invalid) {
+register(): void {
+  if (this.registrationForm.invalid) {
+    queueMicrotask(() => {
       this.snackBar.open('Please fix the errors in the form.', 'OK', { duration: 2500 });
-      return;
-    }
+    });
+    return;
+  }
 
-    this.isSubmitting = true;
+  this.isSubmitting = true;
 
-    this.fetchApiData.userRegistration(this.registrationForm.value).subscribe({
+  this.fetchApiData
+    .userRegistration(this.registrationForm.value)
+    .pipe(finalize(() => (this.isSubmitting = false)))
+    .subscribe({
       next: (response) => {
-        this.isSubmitting = false;
-        this.snackBar.open('Registration successful! You can now log in.', 'OK', { duration: 3000 });
-        this.dialogRef.close(response);
+        queueMicrotask(() => {
+          this.snackBar.open('Registration successful! You can now log in.', 'OK', { duration: 3000 });
+          this.dialogRef.close(response);
+        });
       },
       error: (err) => {
-        this.isSubmitting = false;
-        this.snackBar.open(err?.message ?? 'Registration failed.', 'OK', { duration: 3000 });
+        queueMicrotask(() => {
+          this.snackBar.open(err?.message ?? 'Registration failed.', 'OK', { duration: 3000 });
+        });
       },
     });
   }

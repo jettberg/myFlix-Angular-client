@@ -2,12 +2,12 @@
   <span>{{ title() }}</span>
   <span class="spacer"></span>
 
-  @if (!token()) {
-    <button mat-raised-button (click)="openUserRegistrationDialog()">Sign Up</button>
-    <button mat-raised-button (click)="openUserLoginDialog()">Login</button>
-  } @else {
-    <span class="user">Logged in as: {{ currentUser() }}</span>
+  @if (token()) {
+    <a mat-button routerLink="/movies">Movies</a>
+    <a mat-button routerLink="/profile">Profile</a>
     <button mat-raised-button (click)="logout()">Logout</button>
+  } @else {
+    <a mat-raised-button routerLink="/welcome">Welcome</a>
   }
 </mat-toolbar>
 
