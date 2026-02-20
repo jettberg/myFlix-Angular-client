@@ -5,6 +5,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { filter } from 'rxjs/operators';
 
+
+/**
+ * App Component (Root)
+ *
+ * Main application shell that contains:
+ * - Top navigation toolbar
+ * - Router outlet for all pages
+ * - Authentication state tracking (token + current user)
+ */
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, RouterLink, MatToolbarModule, MatButtonModule, MatSnackBarModule],
@@ -16,17 +25,28 @@ export class App {
   protected readonly currentUser = signal<string | null>(localStorage.getItem('user'));
   protected readonly token = signal<string | null>(localStorage.getItem('token'));
 
+  /**
+ * Creates the root App component and refreshes auth state
+ * when navigation changes.
+ */
   constructor(private router: Router, private snackBar: MatSnackBar) {
     this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => {
       queueMicrotask(() => this.refreshAuthState()); // 👈 key change
     });
   }
 
+  /**
+ * Re-syncs app auth signals with localStorage values.
+ * Useful when login/logout happens in other components.
+ */
   refreshAuthState(): void {
     this.currentUser.set(localStorage.getItem('user'));
     this.token.set(localStorage.getItem('token'));
   }
 
+  /**
+ * Logs the user out by clearing localStorage and routing back to /welcome.
+ */
   logout(): void {
     localStorage.removeItem('user');
     localStorage.removeItem('token');

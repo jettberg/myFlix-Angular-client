@@ -13,6 +13,18 @@ import { GenreDialog } from '../genre-dialog/genre-dialog';
 import { DirectorDialog } from '../director-dialog/director-dialog';
 import { MovieDetailsDialog } from '../movie-details-dialog/movie-details-dialog';
 
+
+
+/**
+ * MovieCard Component
+ *
+ * Displays all movies in a grid layout.
+ * Handles:
+ * - Fetching movies from the API
+ * - Opening dialog windows (Genre, Director, Details)
+ * - Managing favorite/unfavorite functionality
+ * - Keeping favorite state synchronized across navigation
+ */
 @Component({
   selector: 'app-movie-card',
   standalone: true,
@@ -26,15 +38,26 @@ export class MovieCard implements OnInit, OnDestroy {
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
 
+  /** Subscription used to re-sync favorites on navigation changes */
   private routerSub?: Subscription;
 
+  /** List of movies returned from the backend */
   movies: any[] = [];
+
+  /** Controls loading indicator state */
   isLoading = true;
 
   // --- Favorites state ---
+  /** Stores movie IDs that are currently favorited */
   favoriteIds = new Set<string>(); // movie _id strings
+
+  /** Stores movie IDs that are currently favorited */
   private favoriteBusyIds = new Set<string>(); // prevents double-click spam
 
+  /**
+ * Initializes movie list and favorite state.
+ * Also listens for router navigation events to re-sync favorites.
+ */
   ngOnInit(): void {
     this.getMovies();
     this.loadFavorites();
@@ -58,6 +81,10 @@ export class MovieCard implements OnInit, OnDestroy {
     return localStorage.getItem('user');
   }
 
+  /**
+ * Normalizes various movie ID formats into a string.
+ * Handles string IDs or populated movie objects.
+ */
   private normalizeId(v: any): string | null {
     if (!v) return null;
     if (typeof v === 'string') return v;
@@ -65,6 +92,11 @@ export class MovieCard implements OnInit, OnDestroy {
     return null;
   }
 
+
+  /**
+   * Loads the user's favorite movies from the API
+   * and stores them as a Set of IDs for quick lookup.
+   */
   loadFavorites(): void {
     const user = this.getUsername();
     if (!user) {
@@ -76,8 +108,8 @@ export class MovieCard implements OnInit, OnDestroy {
       next: (fav: any) => {
         const ids: string[] = Array.isArray(fav)
           ? fav
-              .map((x: any) => this.normalizeId(x))
-              .filter((x: any) => typeof x === 'string')
+            .map((x: any) => this.normalizeId(x))
+            .filter((x: any) => typeof x === 'string')
           : [];
 
         this.favoriteIds = new Set(ids);
@@ -134,6 +166,9 @@ export class MovieCard implements OnInit, OnDestroy {
   }
 
   // --- Favorites toggle ---
+  /**
+ * Returns whether a movie is currently favorited.
+ */
   isFavorited(movie: any): boolean {
     const id = this.normalizeId(movie?._id);
     return !!id && this.favoriteIds.has(id);

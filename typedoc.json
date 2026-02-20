@@ -1,9 +1,17 @@
 {
-  "entryPoints": ["src/app"],
-  "tsconfig": "tsconfig.app.json",
-  "out": "docs/typedoc",
-  "excludePrivate": true,
-  "excludeProtected": false,
-  "excludeExternals": true,
+  "entryPointStrategy": "expand",
+  "entryPoints": ["src/app/**/*.ts"],
+  "exclude": [
+    "**/*.spec.ts",
+    "**/main.ts",
+    "**/polyfills.ts",
+    "**/test.ts",
+    "**/environments/**",
+    "**/node_modules/**"
+  ],
+  "out": "docs",
+  "tsconfig": "tsconfig.json",
+  "name": "myFlix Angular Client Documentation",
+  "readme": "none",
   "includeVersion": true
 }

@@ -8,6 +8,13 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { finalize } from 'rxjs/operators';
 import { FetchApiDataService } from '../fetch-api-data.service';
 
+
+/**
+ * UserRegistrationForm Component
+ *
+ * Displays the signup dialog and creates a new user account using the API.
+ * Uses a reactive form with validation and shows feedback via snackbars.
+ */
 @Component({
   selector: 'app-user-registration-form',
   standalone: true,
@@ -28,9 +35,17 @@ export class UserRegistrationForm {
   private dialogRef = inject(MatDialogRef<UserRegistrationForm>);
   private snackBar = inject(MatSnackBar);
 
+  /**
+   * Registration form.
+   * Uses uppercase keys because the backend expects `Username`, `Password`, `Email`, `Birthday`.
+   */
   isSubmitting = false;
 
   // Using uppercase keys expected by myFlix API
+  /**
+ * Registration form.
+ * Uses uppercase keys because the backend expects `Username`, `Password`, `Email`, `Birthday`.
+ */
   registrationForm = this.fb.group({
     Username: ['', [Validators.required, Validators.minLength(5)]],
     Password: ['', [Validators.required, Validators.minLength(8)]],
@@ -38,34 +53,41 @@ export class UserRegistrationForm {
     Birthday: [''],
   });
 
-register(): void {
-  if (this.registrationForm.invalid) {
-    queueMicrotask(() => {
-      this.snackBar.open('Please fix the errors in the form.', 'OK', { duration: 2500 });
-    });
-    return;
+  /**
+ * Submits the registration form to the API.
+ * On success, closes the dialog and prompts the user to log in.
+ */
+  register(): void {
+    if (this.registrationForm.invalid) {
+      queueMicrotask(() => {
+        this.snackBar.open('Please fix the errors in the form.', 'OK', { duration: 2500 });
+      });
+      return;
+    }
+
+    this.isSubmitting = true;
+
+    this.fetchApiData
+      .userRegistration(this.registrationForm.value)
+      .pipe(finalize(() => (this.isSubmitting = false)))
+      .subscribe({
+        next: (response) => {
+          queueMicrotask(() => {
+            this.snackBar.open('Registration successful! You can now log in.', 'OK', { duration: 3000 });
+            this.dialogRef.close(response);
+          });
+        },
+        error: (err) => {
+          queueMicrotask(() => {
+            this.snackBar.open(err?.message ?? 'Registration failed.', 'OK', { duration: 3000 });
+          });
+        },
+      });
   }
 
-  this.isSubmitting = true;
-
-  this.fetchApiData
-    .userRegistration(this.registrationForm.value)
-    .pipe(finalize(() => (this.isSubmitting = false)))
-    .subscribe({
-      next: (response) => {
-        queueMicrotask(() => {
-          this.snackBar.open('Registration successful! You can now log in.', 'OK', { duration: 3000 });
-          this.dialogRef.close(response);
-        });
-      },
-      error: (err) => {
-        queueMicrotask(() => {
-          this.snackBar.open(err?.message ?? 'Registration failed.', 'OK', { duration: 3000 });
-        });
-      },
-    });
-  }
-
+  /**
+ * Closes the registration dialog without creating an account.
+ */
   close(): void {
     this.dialogRef.close();
   }

@@ -7,6 +7,15 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { FetchApiDataService } from '../fetch-api-data.service';
 
+
+/**
+ * UserProfile Component
+ *
+ * Displays the logged-in user's profile and allows them to:
+ * - View existing profile info (username, email, birthday)
+ * - Update email/birthday/password
+ * - View and remove favorited movies
+ */
 @Component({
   selector: 'app-user-profile',
   standalone: true,
@@ -28,9 +37,21 @@ export class UserProfile implements OnInit {
   isLoading = true;
 
   // Favorites list (can be populated objects OR ids depending on backend)
+  /**
+ * Favorites list shown in the profile.
+ * Depending on backend behavior, this may contain either:
+ * - full movie objects (populated)
+ * - movie id strings
+ */
   favoriteMovies: any[] = [];
+  /** Tracks which movies are currently being removed to prevent button spam */
   removingIds = new Set<string>();
 
+
+  /**
+ * Reactive form for profile editing.
+ * Username is disabled (read-only).
+ */
   profileForm = this.fb.group({
     Username: [{ value: '', disabled: true }],
     Password: [''], // optional update
@@ -46,6 +67,12 @@ export class UserProfile implements OnInit {
     return localStorage.getItem('user');
   }
 
+  /**
+ * Normalizes either:
+ * - a string id
+ * - a movie object with `_id`
+ * into a consistent string movie id.
+ */
   private normalizeId(v: any): string | null {
     if (!v) return null;
     if (typeof v === 'string') return v;
@@ -53,6 +80,10 @@ export class UserProfile implements OnInit {
     return null;
   }
 
+  /**
+ * Loads the logged-in user's profile data from the API.
+ * Also loads the favorites list into `favoriteMovies`.
+ */
   loadUser(): void {
     const username = this.getUsername();
     if (!username) {
@@ -91,6 +122,10 @@ export class UserProfile implements OnInit {
     });
   }
 
+  /**
+ * Saves profile updates (email, birthday, optional password).
+ * Username is intentionally not sent to the backend.
+ */
   save(): void {
     const username = this.getUsername();
     if (!username) return;
@@ -119,11 +154,19 @@ export class UserProfile implements OnInit {
     });
   }
 
+  /**
+   * Returns whether the given movie is currently being removed
+   * (so the UI can disable the button or show "Removing...").
+   */
   isRemoving(movie: any): boolean {
     const id = this.normalizeId(movie?._id ?? movie);
     return !!id && this.removingIds.has(id);
   }
 
+  /**
+ * Removes a movie from the user's favorites list.
+ * Updates the UI locally after the API confirms removal.
+ */
   removeFromFavorites(movie: any): void {
     const username = this.getUsername();
     const movieId = this.normalizeId(movie?._id ?? movie);

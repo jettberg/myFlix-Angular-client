@@ -8,6 +8,14 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { FetchApiDataService } from '../fetch-api-data.service';
 
+
+/**
+ * UserLoginForm Component
+ *
+ * Displays the login dialog and handles user authentication.
+ * On successful login, stores the returned token + username
+ * in `localStorage` and closes the dialog with `{ user, token }`.
+ */
 @Component({
   selector: 'app-user-login-form',
   standalone: true,
@@ -28,13 +36,22 @@ export class UserLoginForm {
   private dialogRef = inject(MatDialogRef<UserLoginForm>);
   private snackBar = inject(MatSnackBar);
 
+  /** Used to disable the login button while the request is in progress */
   isSubmitting = false;
 
+  /**
+   * Reactive form for login.
+   * Uses uppercase keys because the backend expects `Username` and `Password`.
+   */
   loginForm = this.fb.group({
     Username: ['', [Validators.required]],
     Password: ['', [Validators.required]],
   });
 
+  /**
+ * Attempts to log the user in with the form values.
+ * Saves token + username to localStorage on success.
+ */
   login(): void {
     if (this.loginForm.invalid) {
       this.snackBar.open('Please enter a username and password.', 'OK', { duration: 2500 });
@@ -69,6 +86,9 @@ export class UserLoginForm {
     });
   }
 
+  /**
+ * Closes the login dialog without logging in.
+ */
   close(): void {
     this.dialogRef.close();
   }
